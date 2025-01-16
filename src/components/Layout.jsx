@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { UserMetaData } from "./UserMetaData";
 
 export default function Layout() {
   return (
@@ -59,13 +60,7 @@ export default function Layout() {
                   />
                   <Label htmlFor="auto-save">Auto Save</Label>
                 </div>
-                <Avatar className="bg-red">
-                  <AvatarImage src={<img src={User} />} alt="@shadcn" />
-
-                  <AvatarFallback className="bg-[#FEECDC]">
-                    <User style={{ color: "#D03801" }} />
-                  </AvatarFallback>
-                </Avatar>
+                <UserMetaData />
               </div>
             </div>
           </header>
