@@ -5,39 +5,28 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { AppSidebar } from "@/components/AppSidebar";
-import {
-  Search,
-  Play,
-  Share,
-  Download,
-  Trash2,
-  Plus,
-  Filter,
-  ArrowUpDown,
-  User,
-  Rows,
-  Columns,
-  Star,
-  Stars,
-} from "lucide-react";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { UserMetaData } from "./UserMetaData";
 import { DataTable } from "./DataTable";
-import { FilteredDataTable } from "./FilteredDataTable";
+import React, { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export default function Layout() {
+  const [open, setOpen] = React.useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [fileName, setFileName] = useState("Sample File Name");
   return (
     <div>
       <SidebarProvider
+        open={open}
+        onOpenChange={setOpen}
         style={{
-          "--sidebar-width": "20rem",
-          "--sidebar-width-mobile": "20rem",
+          "--sidebar-width": "12rem",
+          "--sidebar-width-mobile": "12rem",
         }}
       >
         <AppSidebar />
@@ -47,9 +36,20 @@ export default function Layout() {
               <div className="flex items-center justify-around gap-2 px-4">
                 <SidebarTrigger style={{ backgroundColor: "white" }} />
                 <Separator orientation="vertical" className="mr-2 h-4" />
-                <span className="truncate px-4 text-md font-medium">
-                  Sample File Name
-                </span>
+                <Input
+                  //   className="capitalize truncate border-none"
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  className={cn(
+                    "border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 truncate shadow-none border-r-4 text-md font-medium",
+                    "h-full py-2",
+                    (isHovered || isFocused) && "bg-gray-100"
+                  )}
+                  onChange={(e) => setFileName(e.target.value)}
+                  value={fileName}
+                />
               </div>
               <div className="flex items-center gap-5 px-4 ml-auto">
                 <div className="flex items-center space-x-2">
@@ -65,7 +65,7 @@ export default function Layout() {
               </div>
             </div>
           </header>
-          <DataTable />
+          <DataTable fileName={fileName} />
         </SidebarInset>
       </SidebarProvider>
     </div>
