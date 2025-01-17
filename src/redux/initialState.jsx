@@ -17,7 +17,6 @@ export const initialState = {
       header: "",
       cell: ({ row }) => <></>,
       enableHiding: false,
-      enablePinning: false
     },
     {
       accessorKey: "open",

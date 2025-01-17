@@ -61,6 +61,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { useSelector } from "react-redux";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const data = [
   {
@@ -183,7 +184,7 @@ export function DataTable() {
   const [globalFilter, setGlobalFilter] = React.useState([]);
   const columns = useSelector((state) => state.root.columns);
   const [newColPop, setnewColPop] = React.useState(false);
-
+  const isMobile = useIsMobile();
   const table = useReactTable({
     data,
     columns: [
@@ -230,87 +231,168 @@ export function DataTable() {
   });
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 w-full">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4 gap-5">
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-            <Input
-              placeholder="Search"
-              className="pl-10 w-64"
-              value={globalFilter ?? ""}
-              onChange={(event) => table.setGlobalFilter(event.target.value)}
-            />
-          </div>
-          <div className="flex gap-2 items-center">
-            <Rows className="w-[14px]" />
-            <span className="text-sm font-medium">{data.length} Rows</span>
-          </div>
-          <div className="flex gap-2 items-center">
-            <Columns className="w-[14px]" />
-            <span className="text-sm font-medium">
-              {columns.length - 2}/{columns.length - 2} Column
-            </span>
-          </div>
-          {/* 
+    <div className="flex flex-1 flex-col gap-4 p-4 w-[100%]">
+      {!isMobile ? (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4 gap-5 flex-wrap">
+            <div className="relative ">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500 max-w-full" />
+              <Input
+                placeholder="Search"
+                className="pl-10 w-64"
+                value={globalFilter ?? ""}
+                onChange={(event) => table.setGlobalFilter(event.target.value)}
+              />
+            </div>
+            <div className="flex gap-2 items-center">
+              {" "}
+              <div className="flex gap-2 items-center">
+                <Rows className="w-[14px]" />
+                <span className="text-sm font-medium">{data.length} Rows</span>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Columns className="w-[14px]" />
+                <span className="text-sm font-medium">
+                  {columns.length - 2}/{columns.length - 2} Column
+                </span>
+              </div>
+            </div>
+
+            {/* 
           <Button className="flex gap-2 items-center">
             <Filter className="w-[14px]" />
             <span className="text-sm font-medium">0 Filter</span>
           </Button> */}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="ml-auto flex gap-2 items-center"
-              >
-                <Filter className="w-[14px]" /> Filter Columns <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  console.log(column);
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.columnDef?.name}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="ml-auto flex gap-2 items-center"
+                >
+                  <Filter className="w-[14px]" /> Filter Columns <ChevronDown />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    console.log(column);
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.columnDef?.name}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button>
+              <Stars />
+              Enrich
+            </Button>
+            <Button variant="outline" size="icon">
+              <Share className="h-4 w-4" />
+            </Button>
 
-          <div className="flex gap-2 items-center">
-            <ArrowUpDown className="w-[14px]" />
-            <span className="text-sm font-medium">Sort</span>
+            <Button variant="outline" size="icon">
+              <Download className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon">
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-        <div className="flex items-center space-x-2 ml-auto">
-          <Button>
-            <Stars />
-            Enrich
-          </Button>
-          <Button variant="outline" size="icon">
-            <Share className="h-4 w-4" />
-          </Button>
+      ) : (
+        <div>
+          {" "}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500 max-w-full" />
+                <Input
+                  placeholder="Search"
+                  className="pl-10 w-64"
+                  value={globalFilter ?? ""}
+                  onChange={(event) =>
+                    table.setGlobalFilter(event.target.value)
+                  }
+                />
+              </div>
+              <div className="flex gap-2 items-center">
+                {" "}
+                <div className="flex gap-2 items-center">
+                  <Rows className="w-[14px]" />
+                  <span className="text-sm font-medium whitespace-nowrap">
+                    {data.length} Rows
+                  </span>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <Columns className="w-[14px]" />
+                  <span className="text-sm font-medium whitespace-nowrap">
+                    {columns.length - 2}/{columns.length - 2} Column
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="flex">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex gap-2 items-center">
+                    <Filter className="w-[14px]" /> Filter Columns{" "}
+                    <ChevronDown />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {table
+                    .getAllColumns()
+                    .filter((column) => column.getCanHide())
+                    .map((column) => {
+                      console.log(column);
+                      return (
+                        <DropdownMenuCheckboxItem
+                          key={column.id}
+                          className="capitalize"
+                          checked={column.getIsVisible()}
+                          onCheckedChange={(value) =>
+                            column.toggleVisibility(!!value)
+                          }
+                        >
+                          {column.columnDef?.name}
+                        </DropdownMenuCheckboxItem>
+                      );
+                    })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <div className="flex gap-2 items-center ml-auto">
+                <Button>
+                  <Stars />
+                  Enrich
+                </Button>
+                <Button variant="outline" size="icon">
+                  <Share className="h-4 w-4" />
+                </Button>
 
-          <Button variant="outline" size="icon">
-            <Download className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon">
-            <Trash2 className="h-4 w-4" />
-          </Button>
+                <Button variant="outline" size="icon">
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="rounded-md border overflow-x-auto">
         <Table className="min-w-full w-full relative">

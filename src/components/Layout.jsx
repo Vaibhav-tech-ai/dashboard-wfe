@@ -47,7 +47,7 @@ export default function Layout() {
               <div className="flex items-center justify-around gap-2 px-4">
                 <SidebarTrigger style={{ backgroundColor: "white" }} />
                 <Separator orientation="vertical" className="mr-2 h-4" />
-                <span className="px-4 text-md font-medium">
+                <span className="truncate px-4 text-md font-medium">
                   Sample File Name
                 </span>
               </div>
@@ -57,7 +57,9 @@ export default function Layout() {
                     className="hover:border-transparent focus:outline-none"
                     id="auto-save"
                   />
-                  <Label htmlFor="auto-save">Auto Save</Label>
+                  <Label htmlFor="auto-save" className="whitespace-nowrap">
+                    Auto Save
+                  </Label>
                 </div>
                 <UserMetaData />
               </div>
