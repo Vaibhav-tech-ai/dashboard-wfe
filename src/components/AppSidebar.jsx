@@ -17,6 +17,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { PaymentCard } from "./PaymentCard";
 
 // Menu items.
 const items = [
@@ -56,13 +62,13 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <SidebarGroup >
+        <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild tooltip={item.title}>
                     <a href={item.url}>
                       <item.icon style={{ color: "black" }} />
                       <span style={{ color: "black" }}>{item.title}</span>
@@ -77,16 +83,34 @@ export function AppSidebar() {
 
       <SidebarFooter>
         <SidebarMenu>
-          {footer.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <a href={item.url}>
-                  <item.icon style={{ color: item.color }} />
-                  <span style={{ color: item.color }}>{item.title}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {footer.map((item) =>
+            item.title === "Payment" ? (
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url}>
+                        <item.icon style={{ color: item.color }} />
+                        <span style={{ color: item.color }}>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </HoverCardTrigger>
+                <HoverCardContent side="right" className="w-80">
+                  <PaymentCard />
+                </HoverCardContent>
+              </HoverCard>
+            ) : (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title}>
+                  <a href={item.url}>
+                    <item.icon style={{ color: item.color }} />
+                    <span style={{ color: item.color }}>{item.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          )}
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
