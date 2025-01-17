@@ -347,7 +347,7 @@ export function DataTable({ fileName }) {
                 <div className="flex gap-2 items-center">
                   <Rows className="w-[14px]" />
                   <span className="text-sm font-medium whitespace-nowrap">
-                    {data.length} Rows
+                    {rowValues.length} Rows
                   </span>
                 </div>
                 <div className="flex gap-2 items-center">
