@@ -15,6 +15,7 @@ import {
   LucidePlayCircle,
   Play,
   PlayCircle,
+  Share2,
 } from "lucide-react";
 import {
   Popover,
@@ -60,8 +61,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { addRow } from "@/redux/rootSlice";
+import EnrichDataModal from "./EnrichDataModal";
+import { downloadCSV } from "@/helper";
 
 const data = [
   {
@@ -176,17 +180,20 @@ const data = [
 //   },
 // ];
 
-export function DataTable() {
+export function DataTable({ fileName }) {
+  const dispatch = useDispatch();
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState([]);
   const columns = useSelector((state) => state.root.columns);
+  const rowValues = useSelector((state) => state.root.rowValues);
+
   const [newColPop, setnewColPop] = React.useState(false);
   const isMobile = useIsMobile();
   const table = useReactTable({
-    data,
+    data: rowValues,
     columns: [
       ...columns,
       {
@@ -196,7 +203,7 @@ export function DataTable() {
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
-                className="items-center bg-white w-[100%] hover:border-transparent focus:outline-none"
+                className="items-center font-medium text-black bg-white w-[100%] hover:border-transparent focus:outline-none"
               >
                 + Add Column
               </Button>
@@ -229,9 +236,11 @@ export function DataTable() {
       globalFilter,
     },
   });
+  const [open, setOpen] = React.useState(false);
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 w-[100%]">
+      <EnrichDataModal open={open} onOpenChange={setOpen} />
       {!isMobile ? (
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 gap-5 flex-wrap">
@@ -248,7 +257,9 @@ export function DataTable() {
               {" "}
               <div className="flex gap-2 items-center">
                 <Rows className="w-[14px]" />
-                <span className="text-sm font-medium">{data.length} Rows</span>
+                <span className="text-sm font-medium">
+                  {rowValues.length} Rows
+                </span>
               </div>
               <div className="flex gap-2 items-center">
                 <Columns className="w-[14px]" />
@@ -278,7 +289,6 @@ export function DataTable() {
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
                   .map((column) => {
-                    console.log(column);
                     return (
                       <DropdownMenuCheckboxItem
                         key={column.id}
@@ -296,18 +306,22 @@ export function DataTable() {
             </DropdownMenu>
           </div>
           <div className="flex items-center space-x-2">
-            <Button>
+            <Button onClick={() => setOpen(true)}>
               <Stars />
               Enrich
             </Button>
             <Button variant="outline" size="icon">
-              <Share className="h-4 w-4" />
+              <Share2 className="h-4 w-4" />
             </Button>
 
-            <Button variant="outline" size="icon">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => downloadCSV(fileName, rowValues)}
+            >
               <Download className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon">
+            <Button variant="destructive" size="icon">
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -357,7 +371,6 @@ export function DataTable() {
                     .getAllColumns()
                     .filter((column) => column.getCanHide())
                     .map((column) => {
-                      console.log(column);
                       return (
                         <DropdownMenuCheckboxItem
                           key={column.id}
@@ -374,15 +387,19 @@ export function DataTable() {
                 </DropdownMenuContent>
               </DropdownMenu>
               <div className="flex gap-2 items-center ml-auto">
-                <Button>
+                <Button onClick={() => setOpen(true)}>
                   <Stars />
                   Enrich
                 </Button>
                 <Button variant="outline" size="icon">
-                  <Share className="h-4 w-4" />
+                  <Share2 className="h-4 w-4" />
                 </Button>
 
-                <Button variant="outline" size="icon">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => downloadCSV(fileName, rowValues)}
+                >
                   <Download className="h-4 w-4" />
                 </Button>
                 <Button variant="outline" size="icon">
@@ -403,15 +420,13 @@ export function DataTable() {
                 className="border-b border-slate-200"
               >
                 {headerGroup.headers.map((header) => {
-                  console.log(header);
                   return (
                     <TableHead
                       key={header.id}
                       className="border-r border-slate-200"
                     >
-                      <div className="flex items-center gap-2">
-                        {" "}
-                        {/* <header.column.columnDef.icon /> */}
+                      <div className="flex items-center gap-1">
+                        <div>{header.column.columnDef.icon}</div>
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -434,32 +449,17 @@ export function DataTable() {
                   className="border-b border-slate-200"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <TableCell
-                            key={cell.id}
-                            className="border-r border-slate-200 max-w-24"
-                          >
-                            {cell.column.columnDef.accessorKey === "serial"
-                              ? index + 1
-                              : flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                          </TableCell>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {" "}
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <TableCell
+                      key={cell.id}
+                      className="border-r border-slate-200 w-auto"
+                    >
+                      {cell.column.columnDef.accessorKey === "serial"
+                        ? index + 1
+                        : flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
@@ -476,6 +476,13 @@ export function DataTable() {
           </TableBody>
         </Table>
       </div>
+      <Button
+        variant="ghost"
+        className="items-start justify-start bg-white w-[100%] hover:border-transparent focus:outline-none"
+        onClick={() => dispatch(addRow())}
+      >
+        + Add Row
+      </Button>
     </div>
   );
 }
