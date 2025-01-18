@@ -88,7 +88,7 @@ export const initialState = {
     {
       accessorKey: "content",
       icon: <SquareActivity className="text-white bg-yellow-600"/>,
-      name: "Erich Company",
+      name: "Enrich Company",
       header: ({ column }) => {
         return (
           <Button
@@ -96,7 +96,7 @@ export const initialState = {
             className="bg-white"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Erich Company
+            Enrich Company
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
