@@ -8,11 +8,6 @@ export const EditableDiv = ({ column, row }) => {
   const dispatch = useDispatch();
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [rowValue, setRowValue] = useState({
-    rowId: null,
-    column: null,
-    value: "",
-  });
 
   return (
     <Input
